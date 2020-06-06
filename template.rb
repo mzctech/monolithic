@@ -14,7 +14,7 @@ def add_template_repository_to_source_path
     git clone: [
       "--quiet",
       "https://github.com/excid3/jumpstart.git",
-      tempdir
+      tempdir,
     ].map(&:shellescape).join(" ")
 
     if (branch = __FILE__[%r{jumpstart/(.+)/template.rb}, 1])
@@ -38,26 +38,50 @@ def rails_6?
 end
 
 def add_gems
-  gem 'administrate', github: "excid3/administrate", branch: 'jumpstart'
-  gem 'bootstrap', '~> 4.3', '>= 4.3.1'
-  gem 'devise', '~> 4.7', '>= 4.7.0'
-  gem 'devise-bootstrapped', github: 'excid3/devise-bootstrapped', branch: 'bootstrap4'
-  gem 'devise_masquerade', '~> 1.2'
-  gem 'font-awesome-sass', '~> 5.6', '>= 5.6.1'
-  gem 'friendly_id', '~> 5.2', '>= 5.2.5'
-  gem 'gravatar_image_tag', github: 'mdeering/gravatar_image_tag'
-  gem 'mini_magick', '~> 4.9', '>= 4.9.2'
-  gem 'name_of_person', '~> 1.1'
-  gem 'omniauth-facebook', '~> 5.0'
-  gem 'omniauth-github', '~> 1.3'
-  gem 'omniauth-twitter', '~> 1.4'
-  gem 'sidekiq', '~> 6.0', '>= 6.0.3'
-  gem 'sitemap_generator', '~> 6.0', '>= 6.0.1'
-  gem 'whenever', require: false
+  gem "administrate", github: "excid3/administrate", branch: "jumpstart"
+  gem "bootstrap", "~> 4.5"
+  gem "devise", "~> 4.7" # Flexible authentication solution for Rails
+  gem "devise-bootstrapped", github: "excid3/devise-bootstrapped", branch: "bootstrap4"
+  gem "devise_masquerade", "~> 1.2"
+  gem "font-awesome-sass", "~> 5.13"
+  gem "friendly_id", "~> 5.3"
+  gem "gravatar_image_tag", github: "mdeering/gravatar_image_tag"
+  gem "mini_magick", "~> 4.10"
+  gem "name_of_person", "~> 1.1"
+  gem "omniauth-facebook", "~> 5.0" # OmniAuth strategy for Facebook
+  gem "omniauth-github", "~> 1.3" # OmniAuth strategy for GitHub
+  gem "omniauth-twitter", "~> 1.4" # OmniAuth strategy for Twitter
+  gem "sidekiq", "~> 6.0.7" # Sidekiq is used to process background jobs with the help of Redis
+  gem "sidekiq-unique-jobs", "~> 6.0.22" # Ensures that Sidekiq jobs are unique when enqueued
+  gem "sitemap_generator", "~> 6.1" # SitemapGenerator is a framework-agnostic XML Sitemap generator
+  gem "email_validator", "~> 2.0" # Email validator for Rails and ActiveModel
+  gem "envied", "~> 0.9" # Ensure presence and type of your app's ENV-variables
+  gem "httparty", "~> 0.18" # Makes http fun! Also, makes consuming restful web services dead easy
+  gem "inline_svg", "~> 1.7" # Embed SVG documents in your Rails views and style them with CSS
+  gem 'pagy', '~> 3.8' # A Scope & Engine based, clean, powerful, customizable and sophisticated paginator
+  gem "nokogiri", "~> 1.10" # HTML, XML, SAX, and Reader parser
+  gem "strong_migrations", "~> 0.6" # Catch unsafe migrations
+  gem "whenever", require: false
+
+  group :development, :test do
+    gem "amazing_print", "~> 1.1" # Great Ruby debugging companion: pretty print Ruby objects to visualize their structure
+    gem "bullet", "~> 6.1" # help to kill N+1 queries and unused eager loading
+    gem "capybara", "~> 3.32" # Capybara is an integration testing tool for rack based web applications
+    gem "faker", "~> 2.11" # A library for generating fake data such as names, addresses, and phone numbers
+    gem "parallel_tests", "~> 2.32" # Run Test::Unit / RSpec / Cucumber / Spinach in parallel
+    gem "pry-byebug", "~> 3.8" # Combine 'pry' with 'byebug'. Adds 'step', 'next', 'finish', 'continue' and 'break' commands to control execution
+    gem "rspec-rails", "~> 4.0" # rspec-rails is a testing framework for Rails 3+
+    gem "rubocop", "~> 0.84", require: false # Automatic Ruby code style checking tool
+    gem "rubocop-performance", "~> 1.6", require: false # A collection of RuboCop cops to check for performance optimizations in Ruby code
+    gem "rubocop-rails", "~> 2.5", require: false # Automatic Rails code style checking tool
+    gem "rubocop-rspec", "~> 1.39", require: false # Code style checking for RSpec files
+    gem "spring", "~> 2.1" # Preloads your application so things like console, rake and tests run faster
+    gem "spring-commands-rspec", "~> 1.0" # rspec command for spring
+  end
 
   if rails_5?
     gsub_file "Gemfile", /gem 'sqlite3'/, "gem 'sqlite3', '~> 1.3.0'"
-    gem 'webpacker', '~> 4.0.1'
+    gem "webpacker", "~> 4.0.1"
   end
 end
 
@@ -79,7 +103,7 @@ def add_users
 
   # Configure Devise
   environment "config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }",
-              env: 'development'
+              env: "development"
   route "root to: 'home#index'"
 
   # Devise notices are installed via Bootstrap
@@ -94,7 +118,7 @@ def add_users
 
   # Set admin default to false
   in_root do
-    migration = Dir.glob("db/migrate/*").max_by{ |f| File.mtime(f) }
+    migration = Dir.glob("db/migrate/*").max_by { |f| File.mtime(f) }
     gsub_file migration, /:admin/, ":admin, default: false"
   end
 
@@ -105,7 +129,7 @@ def add_users
   end
 
   # Add Devise masqueradable to users
-  inject_into_file("app/models/user.rb", "omniauthable, :masqueradable, :", after: "devise :")
+  inject_into_file("app/models/user.rb", "omniauthable, :masqueradable, :trackable, :", after: "devise :")
 end
 
 def add_webpack
@@ -114,7 +138,7 @@ def add_webpack
 
   # Our application layout already includes the javascript_pack_tag,
   # so we don't need to inject it
-  rails_command 'webpacker:install'
+  rails_command "webpacker:install"
 end
 
 def add_javascript
@@ -133,7 +157,7 @@ environment.plugins.append('Provide', new webpack.ProvidePlugin({
 }))
   JS
 
-  insert_into_file 'config/webpack/environment.js', content + "\n", before: "module.exports = environment"
+  insert_into_file "config/webpack/environment.js", content + "\n", before: "module.exports = environment"
 end
 
 def copy_templates
@@ -204,32 +228,36 @@ def add_administrate
     config.to_prepare do
       Administrate::ApplicationController.helper #{@app_name.camelize}::Application.helpers
     end
-  RUBY
-  end
+  RUBY   end
 end
 
 def add_multiple_authentication
-    insert_into_file "config/routes.rb",
-    ', controllers: { omniauth_callbacks: "users/omniauth_callbacks" }',
-    after: "  devise_for :users"
+  insert_into_file "config/routes.rb",
+                   ', controllers: { omniauth_callbacks: "users/omniauth_callbacks" }',
+                   after: "  devise_for :users"
 
-    generate "model Service user:references provider uid access_token access_token_secret refresh_token expires_at:datetime auth:text"
+  generate "model Service user:references provider uid access_token access_token_secret refresh_token expires_at:datetime auth:text"
 
-    template = """
+  template = "" "
     env_creds = Rails.application.credentials[Rails.env.to_sym] || {}
     %i{ facebook twitter github }.each do |provider|
       if options = env_creds[provider]
         config.omniauth provider, options[:app_id], options[:app_secret], options.fetch(:options, {})
       end
     end
-    """.strip
+    " "".strip
 
-    insert_into_file "config/initializers/devise.rb", "  " + template + "\n\n",
-          before: "  # ==> Warden configuration"
+  insert_into_file "config/initializers/devise.rb", "  " + template + "\n\n",
+                   before: "  # ==> Warden configuration"
 end
 
 def add_whenever
   run "wheneverize ."
+end
+
+def add_envied
+  rails_command "envied init:rails"
+  rails_command "envied extract"
 end
 
 def add_friendly_id
@@ -238,7 +266,7 @@ def add_friendly_id
   insert_into_file(
     Dir["db/migrate/**/*friendly_id_slugs.rb"].first,
     "[5.2]",
-    after: "ActiveRecord::Migration"
+    after: "ActiveRecord::Migration",
   )
 end
 
@@ -266,6 +294,7 @@ after_bundle do
   add_multiple_authentication
   add_sidekiq
   add_friendly_id
+  add_envied
 
   copy_templates
   add_whenever
