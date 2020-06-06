@@ -167,6 +167,16 @@ def copy_templates
   copy_file "Procfile.dev"
   copy_file ".foreman"
 
+  copy_file ".editorconfig"
+  copy_file ".erb-lint.yml"
+  copy_file ".eslintrc.js"
+  copy_file ".nvmrc"
+  copy_file ".prettierignore"
+  copy_file ".rspec"
+  copy_file ".robocop_todo.yml"
+  copy_file ".robocop.yml"
+  copy_file ".ruby-version.yml"
+
   directory "app", force: true
   directory "config", force: true
   directory "lib", force: true

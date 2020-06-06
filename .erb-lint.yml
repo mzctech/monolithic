@@ -1,0 +1,35 @@
+linters:
+  SelfClosingTag:
+    enabled: false
+  ParserErrors:
+    exclude:
+  SpaceInHtmlTag:
+    exclude:
+      - ''
+  AllowedScriptType:
+    enabled: true
+    allowed_types:
+      - 'text/javascript'
+      - 'text/x-tmpl'
+      - 'application/ld+json'
+    allow_blank: true
+    disallow_inline_scripts: false
+  Rubocop:
+    enabled: true
+    rubocop_config:
+      inherit_from:
+        - .rubocop.yml
+      Layout/InitialIndentation:
+        Enabled: false
+      Layout/LineLength:
+        Max: 289
+        Exclude:
+          - ''
+      Layout/TrailingEmptyLines:
+        Enabled: false
+      Lint/UselessAssignment:
+        Enabled: false
+      Rails/OutputSafety:
+        Enabled: false
+        Exclude:
+          - ''
